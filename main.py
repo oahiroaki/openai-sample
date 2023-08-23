@@ -1,33 +1,36 @@
+"""
+main.py
+"""
+import os
+from dotenv import load_dotenv
 import streamlit as st
 import openai
-import os
 
-# APIキーの設定
+# .envファイルの読み込み
+load_dotenv()
+# OpenAI APIキーの設定
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
-st.title("StreamlitのChatGPTサンプル")
+st.title("streamlit sample")
 
 # 定数定義
 USER_NAME = "user"
 ASSISTANT_NAME = "assistant"
 
-
-def response_chatgpt(
-    user_msg: str,
-):
-    """ChatGPTのレスポンスを取得
-
+def response_chatgpt(user_message: str):
+    """
+    ChatGPTのレスポンスを取得
     Args:
         user_msg (str): ユーザーメッセージ。
     """
-    response = openai.ChatCompletion.create(
+    chat_response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "user", "content": user_msg},
+            {"role": "user", "content": user_message},
         ],
         stream=True,
     )
-    return response
+    return chat_response
 
 
 # チャットログを保存したセッション情報を初期化
@@ -49,14 +52,13 @@ if user_msg:
     # アシスタントのメッセージを表示
     response = response_chatgpt(user_msg)
     with st.chat_message(ASSISTANT_NAME):
-        assistant_msg = ""
         assistant_response_area = st.empty()
+        assistant_message = ""
         for chunk in response:
             # 回答を逐次表示
-            tmp_assistant_msg = chunk["choices"][0]["delta"].get("content", "")
-            assistant_msg += tmp_assistant_msg
-            assistant_response_area.write(assistant_msg)
+            assistant_message += chunk["choices"][0]["delta"].get("content", "")
+            assistant_response_area.write(assistant_message)
 
     # セッションにチャットログを追加
     st.session_state.chat_log.append({"name": USER_NAME, "msg": user_msg})
-    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": assistant_msg})
+    st.session_state.chat_log.append({"name": ASSISTANT_NAME, "msg": assistant_message})
