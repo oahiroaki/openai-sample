@@ -1,9 +1,7 @@
 """
-5_PDF.py
+5_📄_PDF.py
 """
-import os
 from typing import List
-from dotenv import load_dotenv
 
 from PyPDF2 import PdfReader
 from langchain.callbacks import get_openai_callback
@@ -30,7 +28,7 @@ def initialize():
 
     st.set_page_config(
         page_title="PDF",
-        page_icon="🤗"
+        page_icon="📄"
     )
 
     # サイドバー
