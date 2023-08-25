@@ -10,3 +10,4 @@ tiktoken
 youtube-transcript-api
 pytube
 requests
+BeautifulSoup
