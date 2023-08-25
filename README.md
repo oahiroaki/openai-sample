@@ -52,6 +52,12 @@ pip3 install -r requirements.txt
 
 # 起動
 
+事前に.envにAPIキーを配置する。
+
+```
+export OPENAI_API_KEY="APIキー"
+```
+
 ```
 ./start.sh
 ```
