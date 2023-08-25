@@ -2,15 +2,24 @@
 main.py
 """
 import os
+from typing import List
 from dotenv import load_dotenv
+
 import streamlit as st
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import (HumanMessage, AIMessage)
-from typing import Any, Dict, List
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Qdrant
+from langchain.embeddings.openai import OpenAIEmbeddings
+from PyPDF2 import PdfReader
 
 # 定数定義
 USER_NAME = "user"
 ASSISTANT_NAME = "assistant"
+QDRANT_PATH = "./local_qdrant"
+COLLECTION_NAME = "my_collection"
 
 def initialize(openai_api_key: str):
     """
@@ -35,18 +44,6 @@ def initialize(openai_api_key: str):
         page_chat(openai_api_key)
 
 
-def page_pdf_upload_and_build_vector_db():
-    """_summary_
-    PDF読み込みページ
-    """
-    return
-
-def page_ask_my_pdf():
-    """_summary_
-    PDF問い合わせページ
-    """
-    return
-
 def page_chat(openai_api_key):
     """_summary_
     チャットページ
@@ -61,7 +58,7 @@ def page_chat(openai_api_key):
     # サイドバー：temperatureを0から2までの範囲で選択
     user_select_temperature = st.sidebar.slider(
         "Temperature:", min_value=0.0, max_value=2.0, value=0.0, step=0.1)
-    
+
     # セッション情報がない場合、チャット履歴の初期化
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -94,6 +91,75 @@ def page_chat(openai_api_key):
         with st.chat_message(ASSISTANT_NAME):
             st.markdown(response.content)
 
+def load_qdrant():
+    client = QdrantClient(path = QDRANT_PATH)
+    # すべてのコレクション名を取得
+    collections = client.get_collections().collections
+    collection_names = [collection.name for collection in collections]
+    # コレクションが存在しなければ作成
+    if COLLECTION_NAME not in collection_names:
+        # コレクションが存在しない場合、新しく作成します
+        client.create_collection(
+            collection_name = COLLECTION_NAME,
+            vectors_config = VectorParams(size = 1536, distance = Distance.COSINE),
+        )
+        print('collection created')
+
+    return Qdrant(
+        client=client,
+        collection_name=COLLECTION_NAME,
+        embeddings=OpenAIEmbeddings()
+    )
+
+def build_vector_store(pdf_text):
+    qdrant = load_qdrant()
+    qdrant.add_texts(pdf_text)
+
+
+def page_pdf_upload_and_build_vector_db():
+    """
+    PDF読み込みページ
+    """
+
+    st.title("PDF Upload")
+    container = st.container()
+    with container:
+        pdf_text = get_pdf_text()
+        if pdf_text:
+            with st.spinner("Loading PDF ..."):
+                build_vector_store(pdf_text)
+
+
+def page_ask_my_pdf():
+    """_summary_
+    PDF問い合わせページ
+    """
+    return
+
+
+def get_pdf_text() -> List[str]:
+    """
+    PDFのテキストを読み取ってチャンクに分割する
+
+    Returns:
+        チャンクのリスト
+    """
+
+    uploaded_file = st.file_uploader(label="Upload your PDF here😇", type="pdf")
+    if uploaded_file:
+        pdf_reader = PdfReader(uploaded_file)
+        text = '\n\n'.join([page.extract_text() for page in pdf_reader.pages])
+        text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            model_name=st.session_state.emb_model_name,
+            # 適切な chunk size は質問対象のPDFによって変わるため調整が必要
+            # 大きくしすぎると質問回答時に色々な箇所の情報を参照することができない
+            # 逆に小さすぎると一つのchunkに十分なサイズの文脈が入らない
+            chunk_size=250,
+            chunk_overlap=0,
+        )
+        return text_splitter.split_text(text)
+    else:
+        return None
 
 if __name__ == '__main__':
     # .envファイルの読み込み
