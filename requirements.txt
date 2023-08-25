@@ -7,3 +7,5 @@ PyPDF2
 qdrant-client
 pycryptodome
 tiktoken
+youtube-transcript-api
+pytube
