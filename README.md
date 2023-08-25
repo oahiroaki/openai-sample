@@ -58,6 +58,8 @@ pip3 install -r requirements.txt
 export OPENAI_API_KEY="APIキー"
 ```
 
+そのあと、以下の通りコマンドで起動する。
+
 ```
 ./start.sh
 ```
