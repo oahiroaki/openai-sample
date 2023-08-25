@@ -53,11 +53,13 @@ def initialize(openai_api_key: str):
         st.session_state.messages.append(HumanMessage(content=user_message))
         with st.chat_message(USER_NAME):
             st.markdown(user_message)
+
         # OpenAI API通信クラス初期化
         llm = ChatOpenAI(
-            openai_api_key=openai_api_key,
-            model=user_select_model,
-            temperature=user_select_temperature)
+            openai_api_key = openai_api_key,
+            model = user_select_model,
+            temperature = user_select_temperature)
+
         with st.spinner("ChatGPT is typing ..."):
             response = llm(st.session_state.messages)
         st.session_state.messages.append(AIMessage(content=response.content))

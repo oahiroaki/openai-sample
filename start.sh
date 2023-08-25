@@ -1,3 +1,3 @@
 #!/bin/bash
 
-streamlit run Chat.py   
+streamlit run 0_💬_Chat.py   
