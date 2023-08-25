@@ -11,8 +11,6 @@ import streamlit as st
 # 定数定義
 USER_NAME = "user"
 ASSISTANT_NAME = "assistant"
-QDRANT_PATH = "./local_qdrant"
-COLLECTION_NAME = "my_collection"
 
 def initialize(openai_api_key: str):
     """
@@ -35,7 +33,7 @@ def initialize(openai_api_key: str):
         "Temperature:", min_value=0.0, max_value=2.0, value=0.0, step=0.1)
 
     # セッション情報がない場合、チャット履歴の初期化
-    if "messages" not in st.session_state:
+    if "messages" not in st.session_state or clear_button:
         st.session_state.messages = []
 
     # チャット履歴の表示
