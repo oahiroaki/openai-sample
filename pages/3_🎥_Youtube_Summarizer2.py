@@ -18,8 +18,8 @@ def init_page():
     st.set_page_config(
         page_title="Yoututbe Summarizer"
     )
-    st.header("Youtube Summarizer")
-    st.sidebar.title("Youtube Summarizer Options")
+    st.header("Youtube Summarizer2")
+    st.sidebar.title("Youtube Summarizer2 Options")
     st.session_state.costs = []
     
 def get_url_input():
@@ -27,7 +27,7 @@ def get_url_input():
     return url
 
 def select_model():
-    model = st.sidebar.radio("Choose a model:", ("GPT-3.5", "GPT-3.5-16k", "GPT-4"))
+    model = st.sidebar.radio("Choose a model:", ("GPT-3.5", "GPT-3.5-16k"))
     if model == "GPT-3.5":
         st.session_state.model_name = "gpt-3.5-turbo-0613"
     elif model == "GPT-3.5-16k":

@@ -16,10 +16,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def init_page():
     st.set_page_config(
-        page_title="Yoututbe Summarizer"
+        page_title="Yoututbe Summarizer1"
     )
-    st.header("Youtube Summarizer")
-    st.sidebar.title("Youtube Summarizer Options")
+    st.header("Youtube Summarizer1")
+    st.sidebar.title("Youtube Summarizer1 Options")
     st.session_state.costs = []
     
 def get_url_input():
@@ -27,13 +27,13 @@ def get_url_input():
     return url
     
 def select_model():
-    model = st.sidebar.radio("Choose a model:", ("GPT-3.5", "GPT-4"))
-    if model == "GPT-3.5":
-        model_name = "gpt-3.5-turbo"
-    else:
-        model_name = "gpt-4"
+    # model = st.sidebar.radio("Choose a model:", "GPT-3.5")
+    # if model == "GPT-3.5":
+    #     model_name = "gpt-3.5-turbo"
+    # else:
+    #     model_name = "gpt-4"
 
-    return ChatOpenAI(temperature=0, model_name=model_name)
+    return ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
 def get_document(url):
     with st.spinner("Fetching Content ..."):
