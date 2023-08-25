@@ -2,3 +2,4 @@ streamlit
 watchdog
 openai
 python-dotenv
+langchain
