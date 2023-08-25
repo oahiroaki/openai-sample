@@ -2,3 +2,8 @@ streamlit
 watchdog
 openai
 python-dotenv
+langchain
+PyPDF2
+qdrant-client
+pycryptodome
+tiktoken
