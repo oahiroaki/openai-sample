@@ -11,7 +11,21 @@ load_dotenv()
 # OpenAI APIキーの設定
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
+# Title
 st.title("streamlit sample")
+
+# side
+st.sidebar.title("Options")
+
+# サイドバーにオプションボタンを設置
+user_select_model = st.sidebar.radio("Choose a model:", ["gpt-3.5-turbo"])
+
+# サイドバーにボタンを設置
+clear_button = st.sidebar.button("Clear Conversation", key="clear")
+
+# サイドバーにスライダーを追加し、temperatureを0から2までの範囲で選択可能にする
+# 初期値は0.0、刻み幅は0.1とする
+user_select_temperature = st.sidebar.slider("Temperature:", min_value=0.0, max_value=2.0, value=0.0, step=0.1)
 
 # 定数定義
 USER_NAME = "user"
@@ -24,7 +38,8 @@ def response_chatgpt(user_message: str):
         user_msg (str): ユーザーメッセージ。
     """
     chat_response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model=user_select_model,
+        temperature=user_select_temperature,
         messages=[
             {"role": "user", "content": user_message},
         ],
@@ -39,6 +54,7 @@ if "chat_log" not in st.session_state:
 
 
 user_msg = st.chat_input("ここにメッセージを入力")
+
 if user_msg:
     # 以前のチャットログを表示
     for chat in st.session_state.chat_log:
