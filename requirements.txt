@@ -5,3 +5,5 @@ python-dotenv
 langchain
 PyPDF2
 qdrant-client
+pycryptodome
+tiktoken
